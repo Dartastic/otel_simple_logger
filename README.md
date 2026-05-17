@@ -27,7 +27,6 @@ import 'package:simple_logger/simple_logger.dart';
 Future<void> main() async {
   await OTel.initialize(
     serviceName: 'my-app',
-    endpoint: 'http://localhost:4317',
   );
 
   final logger = SimpleLogger();
