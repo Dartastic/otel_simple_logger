@@ -34,10 +34,10 @@ import 'otel_simple_logger_suppression.dart';
 ///   `SHOUT` → FATAL)
 /// - `severity_text` — `info.level.name`
 /// - `timestamp` — `info.time`
-/// - attributes — `code.function` / `code.lineno` from `callerFrame`
-///   when present, plus `exception.type` / `exception.message` /
-///   `exception.stacktrace` when `info.error` / `info.stackTrace`
-///   are set.
+/// - attributes — `code.function.name` / `code.line.number` /
+///   `code.file.path` from `callerFrame` when present, plus
+///   `exception.type` / `exception.message` / `exception.stacktrace`
+///   when `info.error` / `info.stackTrace` are set.
 ///
 /// Records inherit `trace_id` / `span_id` from `Context.current` for
 /// free via the OTel logger's `emit` path.
@@ -63,26 +63,30 @@ void Function() attachOTelSimpleLogger(
     final attrs = <Attribute<Object>>[];
     if (info.callerFrame != null) {
       final f = info.callerFrame!;
-      attrs.add(OTel.attributeString('code.function', f.member ?? ''));
+      attrs.add(
+        OTel.attributeString(Code.codeFunctionName.key, f.member ?? ''),
+      );
       if (f.line != null) {
-        attrs.add(OTel.attributeInt('code.lineno', f.line!));
+        attrs.add(OTel.attributeInt(Code.codeLineNumber.key, f.line!));
       }
-      attrs.add(OTel.attributeString('code.filepath', f.uri.toString()));
+      attrs.add(
+        OTel.attributeString(Code.codeFilePath.key, f.uri.toString()),
+      );
     }
     if (info.error != null) {
       attrs
         ..add(OTel.attributeString(
-          'exception.type',
+          ExceptionAttributes.exceptionType.key,
           info.error.runtimeType.toString(),
         ))
         ..add(OTel.attributeString(
-          'exception.message',
+          ExceptionAttributes.exceptionMessage.key,
           info.error.toString(),
         ));
     }
     if (includeStackTrace && info.stackTrace != null) {
       attrs.add(OTel.attributeString(
-        'exception.stacktrace',
+        ExceptionAttributes.exceptionStacktrace.key,
         info.stackTrace.toString(),
       ));
     }
