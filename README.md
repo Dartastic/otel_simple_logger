@@ -13,7 +13,7 @@ record into the OpenTelemetry logs pipeline. Records inherit
 ```yaml
 dependencies:
   simple_logger: ^1.10.0
-  otel_simple_logger: ^0.1.0
+  otel_simple_logger: ^0.2.0
 ```
 
 ## Use
