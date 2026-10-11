@@ -3,7 +3,7 @@ description: >-
   OpenTelemetry log bridge for package:simple_logger. Hooks
   SimpleLogger.onLogged so every log call is mirrored into the OTel logs
   pipeline, inheriting trace_id/span_id.
-version: 0.2.0
+version: 0.2.1-wip
 repository: https://github.com/dartastic/otel_simple_logger
 homepage: https://dartastic.io
 
