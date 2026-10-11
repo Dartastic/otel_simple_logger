@@ -1,7 +1,7 @@
 // Licensed under the Apache License, Version 2.0
 // Copyright 2025, Mindful Software LLC, All rights reserved.
 
-import 'package:dartastic_opentelemetry/dartastic_opentelemetry.dart';
+import 'package:dartastic_opentelemetry_api/dartastic_opentelemetry_api.dart';
 import 'package:logging/logging.dart' as logging_lib;
 import 'package:simple_logger/simple_logger.dart' as sl;
 
@@ -46,7 +46,7 @@ import 'otel_simple_logger_suppression.dart';
 /// `onLogged`, if any). Useful in tests.
 void Function() attachOTelSimpleLogger(
   sl.SimpleLogger logger, {
-  LoggerProvider? loggerProvider,
+  APILoggerProvider? loggerProvider,
   String loggerName = 'package.simple_logger',
   bool includeStackTrace = true,
   bool keepExisting = false,
@@ -57,35 +57,35 @@ void Function() attachOTelSimpleLogger(
       if (keepExisting) previous(log, info);
       return;
     }
-    final provider = loggerProvider ?? OTel.loggerProvider();
+    final provider = loggerProvider ?? OTelAPI.loggerProvider();
     final otel = provider.getLogger(loggerName);
 
     final attrs = <Attribute<Object>>[];
     if (info.callerFrame != null) {
       final f = info.callerFrame!;
       attrs.add(
-        OTel.attributeString(Code.codeFunctionName.key, f.member ?? ''),
+        OTelAPI.attributeString(Code.codeFunctionName.key, f.member ?? ''),
       );
       if (f.line != null) {
-        attrs.add(OTel.attributeInt(Code.codeLineNumber.key, f.line!));
+        attrs.add(OTelAPI.attributeInt(Code.codeLineNumber.key, f.line!));
       }
       attrs.add(
-        OTel.attributeString(Code.codeFilePath.key, f.uri.toString()),
+        OTelAPI.attributeString(Code.codeFilePath.key, f.uri.toString()),
       );
     }
     if (info.error != null) {
       attrs
-        ..add(OTel.attributeString(
+        ..add(OTelAPI.attributeString(
           ExceptionAttributes.exceptionType.key,
           info.error.runtimeType.toString(),
         ))
-        ..add(OTel.attributeString(
+        ..add(OTelAPI.attributeString(
           ExceptionAttributes.exceptionMessage.key,
           info.error.toString(),
         ));
     }
     if (includeStackTrace && info.stackTrace != null) {
-      attrs.add(OTel.attributeString(
+      attrs.add(OTelAPI.attributeString(
         ExceptionAttributes.exceptionStacktrace.key,
         info.stackTrace.toString(),
       ));
@@ -96,7 +96,7 @@ void Function() attachOTelSimpleLogger(
       severityNumber: _mapLevel(info.level),
       severityText: info.level.name,
       body: info.message,
-      attributes: attrs.isEmpty ? null : OTel.attributes(attrs),
+      attributes: attrs.isEmpty ? null : OTelAPI.attributes(attrs),
     );
 
     if (keepExisting) previous(log, info);
